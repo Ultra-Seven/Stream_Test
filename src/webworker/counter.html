@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>webworker test</title>
+</head>
+<body>
+    <div id="result0"></div>
+    <div id="result1"></div>
+    <div id="result2"></div>
+    <div id="result3"></div>
+    <div id="result4"></div>
+    <div id="result5"></div>
+    <div id="result6"></div>
+    <div id="result7"></div>
+    <div id="result8"></div>
+    <div id="result9"></div>
+    <div id="time"></div>
+</body>
+<script>
+    let workers = [];
+    for(let i = 0; i < 10; i++) {
+        workers[i] = new Worker('worker.js');
+    }
+    //multiple threads version
+    function worker1(){
+        //init 10 threads
+        for(let i = 0; i < 10; i++) {
+            //get display element id
+            let ele_id = 'result' + i;
+            //receive a worker message
+            workers[i].onmessage = function(event){
+                document.getElementById(ele_id).innerHTML += event.data+"<br/>" ;
+            };
+        }
+    }
+    //worker1();
+</script>
+<script>
+    let sum_list=[];
+    //single thread version
+    function worker2(){
+        let start = new Date().getTime();
+        //have all of 10 data ready
+        for(let num = 0, sum = 0; num < 10; num++) {
+            sum = 0;
+            for(let j = 0; j < 100; j++) {
+                for(let i = 0; i < 1000000; i++) {
+                    sum += i;
+                }
+            }
+            sum_list[num] = sum;
+        }
+        let end = new Date().getTime();
+        //write into display element
+        for(let num = 0, sum = 0; num < 10; num++) {
+            let ele_id = 'result' + num;
+            document.getElementById(ele_id).innerHTML += sum_list[num] +"<br/>" ;
+        }
+        document.getElementById('time').innerHTML += (end - start) + "<br/>" ;
+    }
+    worker2();
+</script>
+</html>
