@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>webworker test</title>
+    <script src="subworkers.js"></script>
 </head>
 <body>
     <div id="result0"></div>
@@ -18,28 +19,37 @@
     <div id="time"></div>
 </body>
 <script>
-    let workers = [];
-    for(let i = 0; i < 10; i++) {
-        workers[i] = new Worker('worker.js');
-    }
     //multiple threads version
+    let start = new Date().getTime();
+    let end;
     function worker1(){
+        let workers = [];
+        for(let i = 0; i < 10; i++) {
+            workers[i] = new Worker('display.js');
+        }
         //init 10 threads
         for(let i = 0; i < 10; i++) {
             //get display element id
             let ele_id = 'result' + i;
             //receive a worker message
             workers[i].onmessage = function(event){
-                document.getElementById(ele_id).innerHTML += event.data+"<br/>" ;
+                if (event.data == 50499949500000) {
+                    document.getElementById(ele_id).innerHTML += event.data+"<br/>" ;
+                    end = new Date().getTime();
+                    document.getElementById('time').innerHTML = (end - start) + "<br/>" ;
+                }
             };
         }
     }
-    //worker1();
+    function run1() {
+        worker1();
+    }
+    run1();
 </script>
 <script>
-    let sum_list=[];
     //single thread version
     function worker2(){
+        let sum_list=[];
         let start = new Date().getTime();
         //have all of 10 data ready
         for(let num = 0, sum = 0; num < 10; num++) {
@@ -51,14 +61,25 @@
             }
             sum_list[num] = sum;
         }
-        let end = new Date().getTime();
+        for(let num = 0, sum = 0; num < 10; num++) {
+            for(let j = 0; j < 1; j++){
+                for(let i = 0; i < 1000000; i++){
+                    sum_list[num] += i;
+                }
+            }
+        }
         //write into display element
         for(let num = 0, sum = 0; num < 10; num++) {
             let ele_id = 'result' + num;
             document.getElementById(ele_id).innerHTML += sum_list[num] +"<br/>" ;
         }
+    }
+    function run2() {
+        let start = new Date().getTime();
+        //worker2();
+        let end = new Date().getTime();
         document.getElementById('time').innerHTML += (end - start) + "<br/>" ;
     }
-    worker2();
+    //run2();
 </script>
 </html>
