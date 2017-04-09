@@ -17,6 +17,7 @@
     <div id="result8"></div>
     <div id="result9"></div>
     <div id="time"></div>
+    <div id="message"></div>
 </body>
 <script>
     //multiple threads version
@@ -36,7 +37,7 @@
                 if (event.data == 50499949500000) {
                     document.getElementById(ele_id).innerHTML += event.data+"<br/>" ;
                     end = new Date().getTime();
-                    document.getElementById('time').innerHTML = (end - start) + "<br/>" ;
+                    document.getElementById('time').innerHTML = "time:" + (end - start) + "<br/>" ;
                 }
             };
         }
@@ -44,7 +45,7 @@
     function run1() {
         worker1();
     }
-    run1();
+    //run1();
 </script>
 <script>
     //single thread version
@@ -81,5 +82,10 @@
         document.getElementById('time').innerHTML += (end - start) + "<br/>" ;
     }
     //run2();
+</script>
+<script defer async src="message.js"></script>
+<script>
+    let activeController = new MessageController();
+    activeController.main();
 </script>
 </html>
